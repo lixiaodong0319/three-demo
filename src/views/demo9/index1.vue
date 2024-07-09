@@ -11,11 +11,21 @@ import { OrbitControls } from "three/examples/jsm/controls/OrbitControls";
 import gsap from "gsap";
 // 导入dat.gui
 import * as dat from "dat.gui";
-import particles1Img from "@/assets/textures/particles/1.png";
+import pxImg from "@/assets/textures/environmentMaps/2/px.jpg";
+import nxImg from "@/assets/textures/environmentMaps/2/nx.jpg";
+import pyImg from "@/assets/textures/environmentMaps/2/py.jpg";
+import nyImg from "@/assets/textures/environmentMaps/2/ny.jpg";
+import pzImg from "@/assets/textures/environmentMaps/2/pz.jpg";
+import nzImg from "@/assets/textures/environmentMaps/2/nz.jpg";
+import particles3Img from "@/assets/textures/particles/3.png";
+import xuehuaImg from "@/assets/textures/particles/xuehua.png";
 
 const threeDom: any = ref(null);
 
 onMounted(() => {
+  // 目标：设置漫天的雪花
+
+  const gui = new dat.GUI();
   // 1、创建场景
   const scene = new THREE.Scene();
 
@@ -31,9 +41,31 @@ onMounted(() => {
   camera.position.set(0, 0, 40);
   scene.add(camera);
 
-  function createPoints(url: any, size = 0.5, color = [0.5, 0.5, 0.5]) {
+  // 设置cube纹理加载器
+  const cubeTextureLoader = new THREE.CubeTextureLoader();
+  const envMapTexture = cubeTextureLoader.load([
+    pxImg,
+    nxImg,
+    pyImg,
+    nyImg,
+    pzImg,
+    nzImg,
+  ]);
+
+  const sphereGeometry = new THREE.SphereBufferGeometry(1, 20, 20);
+  const material = new THREE.MeshStandardMaterial({
+    metalness: 1, // 0白色，1金属
+    roughness: 0.1, // 光滑度
+    envMap: envMapTexture, // 环境映射
+  });
+  const sphere = new THREE.Mesh(sphereGeometry, material);
+  scene.add(sphere);
+
+  scene.background = envMapTexture;
+
+  function createPoints(url: any, size = 0.5) {
     const particlesGeometry = new THREE.BufferGeometry();
-    const count = 1000;
+    const count = 10000;
 
     // 设置缓冲区数组
     const positions = new Float32Array(count * 3);
@@ -42,13 +74,7 @@ onMounted(() => {
     // 设置顶点
     for (let i = 0; i < count * 3; i++) {
       positions[i] = (Math.random() - 0.5) * 100;
-      if (i % 3 === 0) {
-        colors[i] = color[0] / 255;
-      } else if (i % 3 === 1) {
-        colors[i] = color[1] / 255;
-      } else {
-        colors[i] = color[2] / 255;
-      }
+      colors[i] = 0.5;
     }
     particlesGeometry.setAttribute(
       "position",
@@ -70,7 +96,8 @@ onMounted(() => {
     const textureLoader = new THREE.TextureLoader();
 
     const obj: any = {
-      1: particles1Img,
+      3: particles3Img,
+      xuehua: xuehuaImg,
     };
 
     const texture = textureLoader.load(obj[url]);
@@ -89,10 +116,9 @@ onMounted(() => {
     return points;
   }
 
-  const points = createPoints("1", 0.5, [0, 163, 255]);
-  console.log(points);
-  const points2 = createPoints("1", 0.5, [48, 70, 198]);
-  const points3 = createPoints("1", 0.5, [85, 11, 142]);
+  const points = createPoints("3", 0.5);
+  const points2 = createPoints("3", 1);
+  const points3 = createPoints("xuehua", 0.25);
 
   // 初始化渲染器
   const renderer = new THREE.WebGLRenderer();
@@ -119,25 +145,14 @@ onMounted(() => {
   scene.add(axesHelper);
   // 设置时钟
   const clock = new THREE.Clock();
-  console.log(clock);
 
   function render() {
     let time = clock.getElapsedTime();
-    points.rotation.x = time * 0.05;
-    points.rotation.y = time * -0.05;
-    if (Math.floor(time) % 10 <= 3 && points.material.opacity > 0) {
-      points.material.opacity -= 1 / 180;
-      if (points.material.opacity < 0) points.material.opacity = 0;
-    } else if (Math.floor(time) % 10 > 3 && points.material.opacity < 1) {
-      points.material.opacity += 1 / 180;
-      if (points.material.opacity > 1) points.material.opacity = 1;
-    }
-    points2.rotation.x = time * 0.05;
-    points2.rotation.y = time * -0.05;
-    // points2.material.opacity = 0;
-    points3.rotation.x = time * 0.05;
-    points3.rotation.y = time * -0.05;
-    // points3.material.opacity = 0;
+    points.rotation.x = time * 0.15;
+    points2.rotation.x = time * 0.25;
+    points2.rotation.y = time * 0.2;
+    points3.rotation.x = time * 0.1;
+    points3.rotation.y = time * 0.1;
     controls.update();
     renderer.render(scene, camera);
     //   渲染下一帧的时候就会调用render函数
@@ -148,6 +163,8 @@ onMounted(() => {
 
   // 监听画面变化，更新渲染画面
   window.addEventListener("resize", () => {
+    //   console.log("画面变化了");
+
     // 更新摄像头
     camera.aspect = window.innerWidth / window.innerHeight;
     //   更新摄像机的投影矩阵
