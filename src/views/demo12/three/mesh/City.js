@@ -65,6 +65,10 @@ export default class City {
       });
     });
 
+    this.loader.load("./model/house.glb", (gltf) => {
+      scene.add(gltf.scene);
+    });
+
     eventHub.on("actionClick", (i) => {
       console.log(i);
       this.action.reset();

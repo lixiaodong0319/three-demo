@@ -27,15 +27,14 @@ onMounted(() => {
 
   // 添加物体
   // 创建几何体
-  // const cubeGeometry = new THREE.BoxGeometry();
-  // const cubeMaterial = new THREE.MeshBasicMaterial({ color: 0xffff00 });
+  const cubeGeometry = new THREE.BoxGeometry();
+  const cubeMaterial = new THREE.MeshBasicMaterial({ color: 0xffff00 });
 
-  // // 根据几何体和材质创建物体
-  // const cube = new THREE.Mesh(cubeGeometry, cubeMaterial);
-  // cube.rotation.set(Math.PI / 4, 0, 0);
+  // 根据几何体和材质创建物体
+  const cube = new THREE.Mesh(cubeGeometry, cubeMaterial);
 
-  // // 将几何体添加到场景当中
-  // scene.add(cube);
+  // 将几何体添加到场景当中
+  scene.add(cube);
 
   // 初始化渲染器
   const renderer = new THREE.WebGLRenderer();
@@ -52,11 +51,6 @@ onMounted(() => {
   scene.add(axesHelper);
 
   function render() {
-    // cube.position.x += 0.01;
-    // cube.rotation.x += 0.01;
-    // if (cube.position.x > 5) {
-    //   cube.position.x = 0;
-    // }
     renderer.render(scene, camera);
     requestAnimationFrame(render);
   }

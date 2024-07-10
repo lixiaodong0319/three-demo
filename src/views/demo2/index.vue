@@ -45,11 +45,7 @@ onMounted(() => {
   const axesHelper = new THREE.AxesHelper(5);
   scene.add(axesHelper);
 
-  function render() {
-    renderer.render(scene, camera);
-    requestAnimationFrame(render);
-  }
-  render();
+  renderer.render(scene, camera);
 });
 </script>
 

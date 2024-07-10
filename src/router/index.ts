@@ -8,7 +8,7 @@ export const routes: Array<RouteRecordRaw> = [
   },
   {
     path: "/demo2",
-    name: "请求动画",
+    name: "坐标轴",
     component: () => import("../views/demo2/index.vue"),
   },
   {
@@ -58,7 +58,7 @@ export const routes: Array<RouteRecordRaw> = [
   },
   {
     path: "/demo12",
-    name: "智慧城市",
+    name: "3D模型",
     component: () => import("../views/demo12/index.vue"),
   },
 ];
